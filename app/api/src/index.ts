@@ -1,5 +1,5 @@
 import "dotenv/config";
-
+import authRoutes from "./routes/auth";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -8,6 +8,8 @@ import { createServer } from "http";
 const app = express();
 
 const server = createServer(app);
+
+app.use("/auth", authRoutes);
 
 app.use(helmet());
 
