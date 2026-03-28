@@ -5,6 +5,7 @@ import helmet from "helmet";
 import { createServer } from "http";
 import authRoutes from "./routes/auth";
 import propertyRoutes from "./routes/properties";
+import bookingRoutes from "./routes/bookings";
 
 const app = express();
 
@@ -12,6 +13,7 @@ const server = createServer(app);
 
 app.use("/auth", authRoutes);
 app.use("/properties", propertyRoutes);
+app.use("/bookings", bookingRoutes);
 
 app.use(helmet());
 
