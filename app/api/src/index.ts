@@ -7,11 +7,13 @@ import authRoutes from "./routes/auth";
 import propertyRoutes from "./routes/properties";
 import bookingRoutes from "./routes/bookings";
 import paymentRoutes from "./routes/payments";
-
+import { initSocket } from "./socket";
 
 const app = express();
 
 const server = createServer(app);
+
+initSocket(server);
 
 app.use("/auth", authRoutes);
 app.use("/properties", propertyRoutes);
