@@ -51,7 +51,7 @@ router.post("/initiate", authMiddleware, async (req: AuthRequest, res: Response)
         receiverWalletId: process.env.KONNECT_WALLET_ID,
         token: "TND",
         amount: Math.round(Number(booking.totalPrice) * 1000), // Konnect uses millimes (1 TND = 1000 millimes)
-        description: `Ejerni Booking #${bookingId.slice(0, 8)}`,
+        description: `Ejari Booking #${bookingId.slice(0, 8)}`,
         metadata: { bookingId },
         successUrl: `${process.env.FRONTEND_URL}/booking/${bookingId}/success`,
         failUrl:    `${process.env.FRONTEND_URL}/booking/${bookingId}/fail`,

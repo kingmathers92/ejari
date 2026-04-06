@@ -4,9 +4,9 @@ services:
   postgres:
     image: postgres:15-alpine
     environment:
-      POSTGRES_USER: ejarni
-      POSTGRES_PASSWORD: ejerni123
-      POSTGRES_DB: ejarni
+      POSTGRES_USER: ejari
+      POSTGRES_PASSWORD: ejari123
+      POSTGRES_DB: ejari
     ports:
       - "5432:5432"
     volumes:

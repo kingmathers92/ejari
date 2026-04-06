@@ -10,7 +10,7 @@ async function request<T>(
   options: RequestInit = {}
 ): Promise<T> {
   const token =
-    typeof window !== "undefined" ? localStorage.getItem("ejerni_token") : null;
+    typeof window !== "undefined" ? localStorage.getItem("ejari_token") : null;
 
   const res = await fetch(`${API_URL}${endpoint}`, {
     ...options,
