@@ -26,8 +26,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("ejerni_token");
-    const storedUser = localStorage.getItem("ejerni_user");
+    const storedToken = localStorage.getItem("ejari_token");
+    const storedUser = localStorage.getItem("ejari_user");
 
     if (storedToken && storedUser) {
       try {
@@ -35,8 +35,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(JSON.parse(storedUser));
       } catch {
         // Corrupt data — clear it
-        localStorage.removeItem("ejerni_token");
-        localStorage.removeItem("ejerni_user");
+        localStorage.removeItem("ejari_token");
+        localStorage.removeItem("ejari_user");
       }
     }
 
@@ -44,15 +44,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   function login(newToken: string, newUser: User) {
-    localStorage.setItem("ejerni_token", newToken);
-    localStorage.setItem("ejerni_user", JSON.stringify(newUser));
+    localStorage.setItem("ejari_token", newToken);
+    localStorage.setItem("ejari_user", JSON.stringify(newUser));
     setToken(newToken);
     setUser(newUser);
   }
 
   function logout() {
-    localStorage.removeItem("ejerni_token");
-    localStorage.removeItem("ejerni_user");
+    localStorage.removeItem("ejari_token");
+    localStorage.removeItem("ejari_user");
     setToken(null);
     setUser(null);
   }
