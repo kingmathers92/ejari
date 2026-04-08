@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Cairo } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const cairo = Cairo({
+  subsets: ["latin", "arabic"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-cairo",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -11,7 +15,7 @@ export const metadata: Metadata = {
     template: "%s | إيجاري",
   },
   description:
-    "Trouvez des appartements et villas à louer en Tunisie. Paiement en dinars, factures fiscales, hôtes vérifiés.",
+    "Première plateforme tunisienne de location courte durée. Paiement en dinars, factures fiscales, hôtes vérifiés.",
 };
 
 export default function RootLayout({
@@ -22,7 +26,12 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body
-        className={`${inter.variable} font-sans bg-sand-light text-ink antialiased`}
+        className={`${cairo.variable}`}
+        style={{
+          fontFamily: "var(--font-cairo), 'Cairo', sans-serif",
+          background: "#FDFAF4",
+          color: "#1C1A14",
+        }}
       >
         <AuthProvider>{children}</AuthProvider>
       </body>
