@@ -30,21 +30,21 @@ const cities = [
   },
 ];
 
-const howItWorks = [
+const steps = [
   {
-    step: "1",
+    n: "1",
     title: "Cherchez",
     desc: "Entrez votre destination, les dates et le nombre de voyageurs.",
   },
   {
-    step: "2",
+    n: "2",
     title: "Réservez",
     desc: "Choisissez votre logement et payez en toute sécurité en dinars tunisiens.",
   },
   {
-    step: "3",
+    n: "3",
     title: "Profitez",
-    desc: "Recevez votre facture fiscale et communicquez directement avec l'hôte.",
+    desc: "Recevez votre facture fiscale et communiquez directement avec l'hôte.",
   },
 ];
 
@@ -53,32 +53,101 @@ export default function HomePage() {
     <>
       <Navbar />
 
-      {/* ── Hero ──────────────────────────────────────────────────────── */}
-      <section className="relative min-h-[520px] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-terracotta-pale via-sand-light to-sand" />
+      <section
+        style={{
+          background:
+            "linear-gradient(135deg, #FAECE7 0%, #FDFAF4 50%, #F5EFE0 100%)",
+          position: "relative",
+          overflow: "hidden",
+        }}
+        className="min-h-[560px] flex items-center justify-center"
+      >
+        <div
+          style={{
+            position: "absolute",
+            top: "-80px",
+            right: "-80px",
+            width: "400px",
+            height: "400px",
+            borderRadius: "50%",
+            background: "rgba(196,82,42,0.06)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            bottom: "-60px",
+            left: "-60px",
+            width: "300px",
+            height: "300px",
+            borderRadius: "50%",
+            background: "rgba(245,239,224,0.8)",
+          }}
+        />
 
-        <div className="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full bg-terracotta/5" />
-        <div className="absolute -bottom-24 -left-24 w-[400px] h-[400px] rounded-full bg-sand/60" />
-
-        <div className="relative z-10 w-full max-w-3xl mx-auto px-4 text-center">
-          <p className="inline-flex items-center gap-2 bg-white/70 text-terracotta text-sm font-medium px-4 py-1.5 rounded-full mb-6 border border-terracotta/20">
-            <span className="w-2 h-2 rounded-full bg-terracotta animate-pulse" />
-            La plateforme tunisienne de confiance
-          </p>
-
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-ink leading-tight mb-4">
-            Trouvez votre{" "}
+        <div className="relative z-10 w-full max-w-3xl mx-auto px-4 text-center py-20">
+          {/* Badge */}
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              background: "rgba(255,255,255,0.8)",
+              color: "#C4522A",
+              fontSize: "13px",
+              fontWeight: 500,
+              padding: "6px 16px",
+              borderRadius: "100px",
+              marginBottom: "24px",
+              border: "1px solid rgba(196,82,42,0.2)",
+            }}
+          >
             <span
-              className="text-terracotta italic"
-              style={{ fontFamily: "Georgia, serif" }}
+              style={{
+                width: "8px",
+                height: "8px",
+                borderRadius: "50%",
+                background: "#C4522A",
+                display: "inline-block",
+                animation: "pulse 2s infinite",
+              }}
+            />
+            La plateforme tunisienne de confiance
+          </div>
+
+          {/* Heading */}
+          <h1
+            style={{
+              fontSize: "clamp(40px, 7vw, 72px)",
+              fontWeight: 700,
+              color: "#1C1A14",
+              lineHeight: 1.1,
+              marginBottom: "16px",
+            }}
+          >
+            Trouvez votre{" "}
+            <em
+              style={{
+                fontStyle: "italic",
+                fontFamily: "Georgia, serif",
+                color: "#C4522A",
+              }}
             >
               logement idéal
-            </span>
+            </em>
             <br />
             en Tunisie
           </h1>
 
-          <p className="text-ink-muted text-lg mb-10 max-w-xl mx-auto">
+          <p
+            style={{
+              color: "#6B6860",
+              fontSize: "18px",
+              marginBottom: "40px",
+              maxWidth: "480px",
+              margin: "0 auto 40px",
+            }}
+          >
             Locations vérifiées, paiement en dinars, factures fiscales. Simple
             et sécurisé.
           </p>
@@ -88,8 +157,17 @@ export default function HomePage() {
       </section>
 
       <section className="max-w-7xl mx-auto px-4 py-16">
-        <h2 className="text-2xl font-bold text-ink mb-2">Explorez par ville</h2>
-        <p className="text-ink-muted mb-8">
+        <h2
+          style={{
+            fontSize: "24px",
+            fontWeight: 700,
+            color: "#1C1A14",
+            marginBottom: "6px",
+          }}
+        >
+          Explorez par ville
+        </h2>
+        <p style={{ color: "#6B6860", marginBottom: "32px" }}>
           Des milliers de logements dans toute la Tunisie
         </p>
 
@@ -98,41 +176,98 @@ export default function HomePage() {
             <Link
               key={city.name}
               href={`/search?city=${city.name}`}
-              className="group relative rounded-2xl overflow-hidden aspect-[4/3] block"
+              className="group relative rounded-2xl overflow-hidden block"
+              style={{
+                aspectRatio: "4/3",
+                marginTop: i % 2 === 1 ? "16px" : "0",
+              }}
             >
               <Image
                 src={city.image}
                 alt={city.name}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
-                style={{ marginTop: i % 2 === 1 ? "16px" : "0" }}
+                sizes="(max-width: 768px) 50vw, 25vw"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                <p className="font-semibold text-base">{city.name}</p>
-                <p className="text-sm text-white/80">{city.count} logements</p>
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background:
+                    "linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.1) 60%, transparent 100%)",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  padding: "16px",
+                  color: "white",
+                }}
+              >
+                <p style={{ fontWeight: 600, fontSize: "15px" }}>{city.name}</p>
+                <p style={{ fontSize: "13px", opacity: 0.85 }}>
+                  {city.count} logements
+                </p>
               </div>
             </Link>
           ))}
         </div>
       </section>
 
-      <section className="bg-sand py-16">
+      <section style={{ background: "#F5EFE0", padding: "64px 0" }}>
         <div className="max-w-5xl mx-auto px-4">
-          <h2 className="text-2xl font-bold text-ink text-center mb-12">
+          <h2
+            style={{
+              fontSize: "28px",
+              fontWeight: 700,
+              color: "#1C1A14",
+              textAlign: "center",
+              marginBottom: "48px",
+            }}
+          >
             Comment ça marche
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {howItWorks.map((item) => (
-              <div key={item.step} className="text-center">
-                <div className="w-12 h-12 rounded-full bg-terracotta text-white font-bold text-lg flex items-center justify-center mx-auto mb-4">
-                  {item.step}
+            {steps.map((s) => (
+              <div key={s.n} style={{ textAlign: "center" }}>
+                <div
+                  style={{
+                    width: "52px",
+                    height: "52px",
+                    borderRadius: "50%",
+                    background: "#C4522A",
+                    color: "white",
+                    fontWeight: 700,
+                    fontSize: "20px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 16px",
+                  }}
+                >
+                  {s.n}
                 </div>
-                <h3 className="font-semibold text-ink text-lg mb-2">
-                  {item.title}
+                <h3
+                  style={{
+                    fontWeight: 600,
+                    fontSize: "18px",
+                    color: "#1C1A14",
+                    marginBottom: "8px",
+                  }}
+                >
+                  {s.title}
                 </h3>
-                <p className="text-ink-muted text-sm leading-relaxed">
-                  {item.desc}
+                <p
+                  style={{
+                    color: "#6B6860",
+                    fontSize: "14px",
+                    lineHeight: 1.6,
+                  }}
+                >
+                  {s.desc}
                 </p>
               </div>
             ))}
@@ -140,10 +275,16 @@ export default function HomePage() {
         </div>
       </section>
 
-      <footer className="bg-ink text-white/60 py-10">
+      <footer
+        style={{
+          background: "#1C1A14",
+          color: "rgba(255,255,255,0.5)",
+          padding: "40px 0",
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
-          <span className="text-white font-bold text-lg">
-            إيجاري<span className="text-terracotta-light">.</span>
+          <span style={{ color: "white", fontWeight: 700, fontSize: "18px" }}>
+            إيجاري<span style={{ color: "#E87A50" }}>.</span>
           </span>
           <p>© 2026 إيجاري — Tunisie. Tous droits réservés.</p>
         </div>

@@ -26,9 +26,6 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-inter)", "sans-serif"],
       },
-      borderRadius: {
-        brand: "12px",
-      },
     },
   },
   plugins: [],

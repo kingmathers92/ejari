@@ -3,28 +3,54 @@
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import { useState } from "react";
-import { Button } from "@/components/ui/Button";
 
 export function Navbar() {
   const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 bg-sand-light/90 backdrop-blur-sm border-b border-[#E0DDD6]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <nav
+      style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 50,
+        background: "rgba(253,250,244,0.92)",
+        backdropFilter: "blur(12px)",
+        borderBottom: "1px solid #E0DDD6",
+      }}
+    >
+      <div
+        className="max-w-7xl mx-auto px-4 sm:px-6"
+        style={{
+          height: "64px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <span className="text-xl font-bold text-ink">
-            إيجاري
-            <span className="text-terracotta">.</span>
-          </span>
+        <Link
+          href="/"
+          style={{
+            fontSize: "20px",
+            fontWeight: 700,
+            color: "#1C1A14",
+            textDecoration: "none",
+          }}
+        >
+          إيجاري<span style={{ color: "#C4522A" }}>.</span>
         </Link>
 
-        {/* Desktop */}
-        <div className="hidden md:flex items-center gap-6">
+        {/* Desktop nav */}
+        <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
           <Link
             href="/search"
-            className="text-sm text-ink-muted hover:text-ink transition-colors"
+            style={{
+              fontSize: "14px",
+              color: "#6B6860",
+              textDecoration: "none",
+            }}
+            className="hover:text-[#1C1A14] transition-colors"
           >
             Explorer
           </Link>
@@ -34,26 +60,52 @@ export function Navbar() {
               {user.role === "HOST" && (
                 <Link
                   href="/dashboard"
-                  className="text-sm text-ink-muted hover:text-ink transition-colors"
+                  style={{
+                    fontSize: "14px",
+                    color: "#6B6860",
+                    textDecoration: "none",
+                  }}
+                  className="hover:text-[#1C1A14] transition-colors"
                 >
                   Tableau de bord
                 </Link>
               )}
-              {/* User menu */}
-              <div className="relative">
+
+              <div style={{ position: "relative" }}>
                 <button
                   onClick={() => setMenuOpen(!menuOpen)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl border border-[#E0DDD6] hover:border-terracotta/40 transition-colors"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    padding: "6px 12px",
+                    borderRadius: "12px",
+                    border: "1px solid #E0DDD6",
+                    background: "white",
+                    cursor: "pointer",
+                  }}
                 >
-                  {/* Avatar initials */}
-                  <div className="w-7 h-7 rounded-full bg-terracotta-pale flex items-center justify-center text-xs font-semibold text-terracotta">
+                  <div
+                    style={{
+                      width: "28px",
+                      height: "28px",
+                      borderRadius: "50%",
+                      background: "#FAECE7",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      color: "#C4522A",
+                    }}
+                  >
                     {user.fullName.charAt(0).toUpperCase()}
                   </div>
-                  <span className="text-sm text-ink">
+                  <span style={{ fontSize: "14px", color: "#1C1A14" }}>
                     {user.fullName.split(" ")[0]}
                   </span>
                   <svg
-                    className="w-4 h-4 text-ink-muted"
+                    style={{ width: "14px", height: "14px", color: "#6B6860" }}
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -69,35 +121,76 @@ export function Navbar() {
 
                 {menuOpen && (
                   <>
-                    {/* Backdrop to close menu */}
                     <div
-                      className="fixed inset-0"
+                      style={{ position: "fixed", inset: 0 }}
                       onClick={() => setMenuOpen(false)}
                     />
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl border border-[#E0DDD6] shadow-lg overflow-hidden z-10">
-                      <Link
-                        href="/bookings"
-                        className="block px-4 py-2.5 text-sm text-ink hover:bg-sand transition-colors"
-                        onClick={() => setMenuOpen(false)}
-                      >
-                        Mes réservations
-                      </Link>
+                    <div
+                      style={{
+                        position: "absolute",
+                        right: 0,
+                        marginTop: "8px",
+                        width: "192px",
+                        background: "white",
+                        borderRadius: "12px",
+                        border: "1px solid #E0DDD6",
+                        boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+                        overflow: "hidden",
+                        zIndex: 10,
+                      }}
+                    >
+                      {[{ href: "/bookings", label: "Mes réservations" }].map(
+                        (item) => (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            style={{
+                              display: "block",
+                              padding: "10px 16px",
+                              fontSize: "14px",
+                              color: "#1C1A14",
+                              textDecoration: "none",
+                            }}
+                            className="hover:bg-[#F5EFE0] transition-colors"
+                            onClick={() => setMenuOpen(false)}
+                          >
+                            {item.label}
+                          </Link>
+                        ),
+                      )}
                       {user.role === "GUEST" && (
                         <Link
                           href="/become-host"
-                          className="block px-4 py-2.5 text-sm text-terracotta hover:bg-terracotta-pale transition-colors"
+                          style={{
+                            display: "block",
+                            padding: "10px 16px",
+                            fontSize: "14px",
+                            color: "#C4522A",
+                            textDecoration: "none",
+                          }}
+                          className="hover:bg-[#FAECE7] transition-colors"
                           onClick={() => setMenuOpen(false)}
                         >
                           Devenir hôte
                         </Link>
                       )}
-                      <hr className="border-[#E0DDD6]" />
+                      <hr style={{ borderColor: "#E0DDD6", margin: 0 }} />
                       <button
                         onClick={() => {
                           logout();
                           setMenuOpen(false);
                         }}
-                        className="w-full text-left px-4 py-2.5 text-sm text-ink-muted hover:bg-sand transition-colors"
+                        style={{
+                          width: "100%",
+                          textAlign: "left",
+                          padding: "10px 16px",
+                          fontSize: "14px",
+                          color: "#6B6860",
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                        }}
+                        className="hover:bg-[#F5EFE0] transition-colors"
                       >
                         Déconnexion
                       </button>
@@ -107,10 +200,20 @@ export function Navbar() {
               </div>
             </>
           ) : (
-            <Link href="/login">
-              <Button variant="outline" size="sm">
-                Connexion
-              </Button>
+            <Link
+              href="/login"
+              style={{
+                fontSize: "14px",
+                padding: "8px 20px",
+                borderRadius: "10px",
+                border: "1px solid #C4522A",
+                color: "#C4522A",
+                textDecoration: "none",
+                fontWeight: 500,
+              }}
+              className="hover:bg-[#FAECE7] transition-colors"
+            >
+              Connexion
             </Link>
           )}
         </div>

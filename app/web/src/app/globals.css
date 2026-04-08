@@ -8,21 +8,15 @@
   --ink-muted: #6b6860;
   --sand: #f5efe0;
   --sand-light: #fdfaf4;
-  --radius: 12px;
+  --border: #e0ddd6;
 }
 
 html {
   scroll-behavior: smooth;
 }
-
-button {
-  cursor: pointer;
-}
-
-input,
-textarea,
-select {
-  outline: none;
+body {
+  background-color: #fdfaf4;
+  color: #1c1a14;
 }
 
 ::-webkit-scrollbar {
