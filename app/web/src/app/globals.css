@@ -1,22 +1,48 @@
 @import "tailwindcss";
 
 :root {
+  --sand: #f5efe0;
+  --sand-dark: #e8dfc8;
+  --ink: #1c1a14;
+  --ink-light: #3d3a2e;
   --terracotta: #c4522a;
   --terracotta-light: #e87a50;
-  --terracotta-pale: #faece7;
-  --ink: #1c1a14;
-  --ink-muted: #6b6860;
-  --sand: #f5efe0;
-  --sand-light: #fdfaf4;
-  --border: #e0ddd6;
+  --olive: #5c6b3a;
+  --cream: #fdfaf4;
+  --muted: #8a8270;
+  --border: rgba(28, 26, 20, 0.08);
 }
 
 html {
   scroll-behavior: smooth;
 }
+
 body {
-  background-color: #fdfaf4;
-  color: #1c1a14;
+  font-family: "Cairo", "Inter", sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  overflow-x: hidden;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }
 
 ::-webkit-scrollbar {
