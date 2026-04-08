@@ -1,74 +1,73 @@
-# إيجاري (Ejari) — Plateforme de location courte durée en Tunisie
+# Ejari — Short-Term Rental Platform in Tunisia
 
-Plateforme complète de location immobilière courte durée pour la Tunisie. Alternative locale à Airbnb et Booking.com avec paiement en dinars tunisiens, facturation fiscale automatique et authentification par OTP.
-
----
-
-## Stack technique
-
-| Couche                | Technologie                                       |
-| --------------------- | ------------------------------------------------- |
-| Frontend              | Next.js 14 (App Router), TypeScript, Tailwind CSS |
-| Backend               | Node.js, Express, TypeScript                      |
-| Base de données       | PostgreSQL via Prisma ORM                         |
-| Cache / Sessions      | Redis (ioredis)                                   |
-| Temps réel            | Socket.IO (chat hôte ↔ voyageur)                  |
-| Paiements             | Konnect (dinars tunisiens)                        |
-| Infrastructure locale | Docker Compose                                    |
+A complete short-term rental platform for Tunisia. A local alternative to Airbnb and Booking.com with payments in Tunisian Dinars (TND), automatic tax invoicing, and OTP-based authentication.
 
 ---
 
-## Structure du projet
+## Tech Stack
+
+| Layer                | Technology                                        |
+| -------------------- | ------------------------------------------------- |
+| Frontend             | Next.js 14 (App Router), TypeScript, Tailwind CSS |
+| Backend              | Node.js, Express, TypeScript                      |
+| Database             | PostgreSQL with Prisma ORM                        |
+| Cache / Sessions     | Redis (ioredis)                                   |
+| Real-time            | Socket.IO (host ↔ guest chat)                     |
+| Payments             | Konnect (Tunisian Dinars)                         |
+| Local Infrastructure | Docker Compose                                    |
+
+---
+
+## Project Structure
 
 ```
-ejerni/
+ejari/
 ├── app/
 │   ├── api/                  ← Backend Express
 │   │   ├── prisma/
-│   │   │   ├── schema.prisma ← Définition de la base de données
-│   │   │   └── seed.ts       ← Données de test
+│   │   │   ├── schema.prisma ← Database schema
+│   │   │   └── seed.ts       ← Test data
 │   │   └── src/
-│   │       ├── lib/          ← Client Prisma (singleton)
-│   │       ├── middleware/   ← Vérification JWT
+│   │       ├── lib/          ← Prisma client (singleton)
+│   │       ├── middleware/   ← JWT authentication
 │   │       ├── routes/       ← auth, properties, bookings, payments
 │   │       ├── services/     ← OTP (Redis), Redis client
-│   │       └── socket.ts     ← Chat temps réel Socket.IO
-│   └── web/                  ← Frontend Next.js
+│   │       └── socket.ts     ← Real-time chat with Socket.IO
+│   └── web/                  ← Next.js Frontend
 │       └── src/
 │           ├── app/          ← Pages (App Router)
-│           ├── components/   ← Composants réutilisables
+│           ├── components/   ← Reusable components
 │           ├── lib/          ← API client, Auth context
-│           └── types/        ← Types TypeScript partagés
-└── docker-compose.yml        ← Postgres + Redis en local
+│           └── types/        ← Shared TypeScript types
+└── docker-compose.yml        ← Postgres + Redis for local development
 ```
 
 ---
 
-## Lancer le projet en local
+## Running the Project Locally
 
-### Prérequis
+### Prerequisites
 
 - Node.js v18+
 - Docker Desktop
 
-### 1. Démarrer l'infrastructure
+### 1. Start the Infrastructure
 
-```bash
+````bash
 docker compose up -d
-# Lance PostgreSQL sur :5432 et Redis sur :6379
-```
+# Starts PostgreSQL on port 5432 and Redis on port 6379
 
 ### 2. Backend API
 
 ```bash
 cd app/api
-cp .env.example .env       # Remplir JWT_SECRET avec une longue chaîne aléatoire
+cp .env.example .env          # Fill JWT_SECRET with a long random string
 npm install
 npx prisma generate
 npx prisma db push
-npm run db:seed            # Crée 6 propriétés et 3 utilisateurs de test
-npm run dev                # API sur http://localhost:4000
-```
+npm run db:seed               # Creates 6 properties and 3 test users
+npm run dev                   # API runs on http://localhost:4000
+````
 
 ### 3. Frontend
 
@@ -76,91 +75,91 @@ npm run dev                # API sur http://localhost:4000
 cd app/web
 cp .env.local.example .env.local
 npm install
-npm run dev                # Site sur http://localhost:3000
+npm run dev                   # Website runs on http://localhost:3000
 ```
 
 ---
 
-## Comptes de test
+## Test Accounts
 
-Tous les OTP s'affichent dans le terminal de l'API (pas de vrai SMS en dev).
+All OTP codes are displayed in the API terminal (no real SMS in development mode).
 
-| Rôle                      | Téléphone    |
-| ------------------------- | ------------ |
-| Hôte 1 — Ahmed Ben Ali    | +21698000001 |
-| Hôte 2 — Fatma Trabelsi   | +21698000002 |
-| Voyageur — Khaled Mansour | +21698000003 |
-
----
-
-## Flux de réservation complet
-
-1. Le voyageur cherche un logement sur `/search`
-2. Il sélectionne des dates sur la page `/property/:id`
-3. Il clique "Réserver" → redirigé vers `/login` s'il n'est pas connecté
-4. Après connexion, la réservation est créée avec statut `PENDING`
-5. Il est redirigé vers la page de paiement mock (dev) ou Konnect (prod)
-6. Après paiement : statut → `CONFIRMED`, facture fiscale générée automatiquement
-7. L'hôte voit la réservation dans son tableau de bord et peut chatter avec le voyageur
+| Role                    | Phone Number |
+| ----------------------- | ------------ |
+| Host 1 — Ahmed Ben Ali  | +21698000001 |
+| Host 2 — Fatma Trabelsi | +21698000002 |
+| Guest — Khaled Mansour  | +21698000003 |
 
 ---
 
-## API — Endpoints principaux
+## Complete Booking Flow
+
+1. Guest searches for a property on `/search`
+2. Selects dates on the property page `/property/:id`
+3. Clicks "Book Now" → redirected to `/login` if not authenticated
+4. After login, a booking is created with status `PENDING`
+5. Redirected to mock payment page (dev) or Konnect payment (production)
+6. After successful payment: status → `CONFIRMED`, tax invoice is automatically generated
+7. Host sees the booking in their dashboard and can chat with the guest in real time
+
+---
+
+## Main API Endpoints
 
 ```
-POST   /auth/request-otp        Demander un code OTP
-POST   /auth/verify-otp         Vérifier le code et obtenir un JWT
-GET    /auth/me                 Profil de l'utilisateur connecté
-POST   /auth/become-host        Passer du rôle GUEST à HOST
+POST   /auth/request-otp        Request OTP code
+POST   /auth/verify-otp         Verify OTP and receive JWT
+GET    /auth/me                 Get current user profile
+POST   /auth/become-host        Switch from GUEST to HOST role
 
-GET    /properties              Recherche avec filtres et disponibilité par dates
-GET    /properties/:id          Détail d'une propriété
-POST   /properties              Créer une annonce (hôtes uniquement)
+GET    /properties              Search with filters and date availability
+GET    /properties/:id          Property details
+POST   /properties              Create a new listing (hosts only)
 
-POST   /bookings                Créer une réservation (vérifie les conflits)
-GET    /bookings                Liste des réservations (hôte ou voyageur)
-GET    /bookings/stats          Statistiques du tableau de bord hôte
-POST   /bookings/:id/confirm    Confirmer une réservation (hôte)
-POST   /bookings/:id/cancel     Annuler une réservation
+POST   /bookings                Create a booking (checks for conflicts)
+GET    /bookings                List bookings (for host or guest)
+GET    /bookings/stats          Host dashboard statistics
+POST   /bookings/:id/confirm    Confirm a booking (host only)
+POST   /bookings/:id/cancel     Cancel a booking
 
-POST   /payments/initiate       Initier un paiement Konnect
-POST   /payments/webhook        Webhook Konnect (confirmation automatique)
-POST   /payments/dev-confirm    Simuler un paiement (développement uniquement)
-GET    /payments/invoice/:id    Récupérer la facture d'une réservation
+POST   /payments/initiate       Initiate Konnect payment
+POST   /payments/webhook        Konnect webhook (automatic confirmation)
+POST   /payments/dev-confirm    Simulate payment (development only)
+GET    /payments/invoice/:id    Download invoice for a booking
 ```
 
 ---
 
-## Pages frontend
+## Frontend Pages
 
-| URL                       | Description              |
-| ------------------------- | ------------------------ |
-| `/`                       | Page d'accueil           |
-| `/search`                 | Recherche avec filtres   |
-| `/property/:id`           | Détail et réservation    |
-| `/login`                  | Connexion par OTP        |
-| `/bookings`               | Mes réservations         |
-| `/booking/:id`            | Détail + chat temps réel |
-| `/booking/:id/mock-pay`   | Paiement simulé (dev)    |
-| `/booking/:id/success`    | Confirmation de paiement |
-| `/become-host`            | Devenir hôte             |
-| `/dashboard`              | Tableau de bord hôte     |
-| `/dashboard/property/new` | Créer une annonce        |
-
----
-
-## Fonctionnalités clés
-
-- **Authentification OTP** — Connexion par numéro de téléphone sans mot de passe, avec limitation de débit et protection brute force
-- **Recherche par disponibilité** — Filtre les logements déjà réservés pour les dates sélectionnées (formule de chevauchement d'intervalles)
-- **Protection anti-double réservation** — Vérification de conflit avant chaque insertion en base
-- **Chat temps réel** — Socket.IO avec authentification JWT, salles par réservation
-- **Facturation fiscale automatique** — Facture avec TVA 19% générée dès la confirmation du paiement
-- **Mode développement** — Paiements simulables sans compte Konnect, OTP affiché dans le terminal
+| URL                       | Description                      |
+| ------------------------- | -------------------------------- |
+| `/`                       | Homepage                         |
+| `/search`                 | Search with filters              |
+| `/property/:id`           | Property details & booking       |
+| `/login`                  | Login with OTP                   |
+| `/bookings`               | My bookings                      |
+| `/booking/:id`            | Booking details + real-time chat |
+| `/booking/:id/mock-pay`   | Simulated payment (dev)          |
+| `/booking/:id/success`    | Payment success page             |
+| `/become-host`            | Become a host                    |
+| `/dashboard`              | Host dashboard                   |
+| `/dashboard/property/new` | Create new listing               |
 
 ---
 
-## Déploiement (production)
+## Key Features
+
+- **OTP Authentication** — Passwordless login using phone number, with rate limiting and brute-force protection
+- **Availability-Based Search** — Filters out properties already booked for the selected dates (interval overlap formula)
+- **Double-Booking Protection** — Conflict verification before every booking insertion
+- **Real-time Chat** — Socket.IO with JWT authentication, private rooms per booking
+- **Automatic Tax Invoicing** — Invoice with 19% VAT generated immediately after payment confirmation
+- **Development Mode** — Simulated payments without a real Konnect account, OTP codes shown in the terminal
+
+---
+
+## Production Deployment
 
 | Service     | Plateforme recommandée |
 | ----------- | ---------------------- |
@@ -169,20 +168,22 @@ GET    /payments/invoice/:id    Récupérer la facture d'une réservation
 | PostgreSQL  | Neon ou Railway        |
 | Redis       | Upstash                |
 
-Variables d'environnement à configurer en production :
+Environment variables to configure in production:
 
-- `DATABASE_URL` — chaîne de connexion PostgreSQL
-- `JWT_SECRET` — chaîne aléatoire longue (`openssl rand -base64 64`)
-- `REDIS_URL` — URL Redis avec authentification
-- `KONNECT_API_KEY` — Clé API Konnect
-- `KONNECT_WALLET_ID` — ID de portefeuille Konnect
-- `KONNECT_WEBHOOK_SECRET` — Secret de signature webhook
-- `FRONTEND_URL` — URL de production du frontend
-- `API_URL` — URL de production de l'API
+- `DATABASE_URL` — PostgreSQL connection string
+- `JWT_SECRET` — Long random string (`openssl rand -base64 64`)
+- `REDIS_URL` — Redis URL with authentication
+- `KONNECT_API_KEY` — Konnect API key
+- `KONNECT_WALLET_ID` — Konnect wallet ID
+- `KONNECT_WEBHOOK_SECRET` — Webhook signature secret
+- `FRONTEND_URL` — Production frontend URL
+- `API_URL` — Production API URL
 
 ---
 
-## Développé par
+## Built With
 
-Projet construit étape par étape avec une architecture production-ready :
-TypeScript strict, séparation routes/services, singleton Prisma, OTP Redis avec TTL automatique, validation des chevauchements de dates, transactions atomiques pour les paiements.
+This project was developed step by step with a production-ready architecture:
+Strict TypeScript, clean separation of routes and services, Prisma singleton, Redis-based OTP with automatic TTL, date overlap validation, and atomic transactions for payments.
+
+Developed for the Tunisian market — Supporting local currency, local payment gateway, and automatic tax compliance.
