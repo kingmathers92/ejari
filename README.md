@@ -53,9 +53,10 @@ ejari/
 
 ### 1. Start the Infrastructure
 
-````bash
+```bash
 docker compose up -d
 # Starts PostgreSQL on port 5432 and Redis on port 6379
+```
 
 ### 2. Backend API
 
@@ -67,7 +68,7 @@ npx prisma generate
 npx prisma db push
 npm run db:seed               # Creates 6 properties and 3 test users
 npm run dev                   # API runs on http://localhost:4000
-````
+```
 
 ### 3. Frontend
 
