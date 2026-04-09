@@ -3,6 +3,7 @@ import { Cairo } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
 
+// Cairo is the font used in the original design
 const cairo = Cairo({
   subsets: ["latin", "arabic"],
   weight: ["300", "400", "500", "600", "700"],

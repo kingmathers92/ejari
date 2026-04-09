@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 
+// City tiles — colored gradients matching the original design (no photos needed)
 const cities = [
   {
     name: "Tunis",
@@ -137,6 +138,7 @@ export default function HomePage() {
     <>
       <Navbar />
 
+      {/* ── HERO ──────────────────────────────────────────────────────── */}
       <section
         style={{
           minHeight: "100vh",
@@ -300,6 +302,7 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── CITY TILES ───────────────────────────────────────────────── */}
       <div
         style={{
           display: "grid",
@@ -349,6 +352,7 @@ export default function HomePage() {
         ))}
       </div>
 
+      {/* ── FEATURES ─────────────────────────────────────────────────── */}
       <section id="features" style={{ padding: "80px 48px" }}>
         <div
           style={{
@@ -559,6 +563,7 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── PRICING ──────────────────────────────────────────────────── */}
       <section
         id="pricing"
         style={{ background: "#F5EFE0", padding: "80px 48px" }}
@@ -726,6 +731,7 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── WAITLIST CTA ─────────────────────────────────────────────── */}
       <section
         id="waitlist"
         style={{
@@ -840,6 +846,7 @@ export default function HomePage() {
         </p>
       </section>
 
+      {/* ── FOOTER ────────────────────────────────────────────────────── */}
       <footer
         style={{
           background: "#1C1A14",
