@@ -1,73 +1,57 @@
-# Ejari — Short-Term Rental Platform in Tunisia
+# إيجاري (Ejari) — Short-Term Rental Platform for Tunisia
 
-A complete short-term rental platform for Tunisia. A local alternative to Airbnb and Booking.com with payments in Tunisian Dinars (TND), automatic tax invoicing, and OTP-based authentication.
+A full-stack rental platform built as a local alternative to Airbnb and Booking.com. Payments in Tunisian Dinar, automatic fiscal invoices, phone OTP authentication, and real-time host-guest chat.
 
 ---
 
 ## Tech Stack
 
-| Layer                | Technology                                        |
-| -------------------- | ------------------------------------------------- |
-| Frontend             | Next.js 14 (App Router), TypeScript, Tailwind CSS |
-| Backend              | Node.js, Express, TypeScript                      |
-| Database             | PostgreSQL with Prisma ORM                        |
-| Cache / Sessions     | Redis (ioredis)                                   |
-| Real-time            | Socket.IO (host ↔ guest chat)                     |
-| Payments             | Konnect (Tunisian Dinars)                         |
-| Local Infrastructure | Docker Compose                                    |
+| Layer                | Technology                                              |
+| -------------------- | ------------------------------------------------------- |
+| Frontend             | Next.js 14 (App Router + SSR), TypeScript, Tailwind CSS |
+| Backend              | Node.js, Express, TypeScript                            |
+| Database             | PostgreSQL via Prisma ORM                               |
+| Cache / Sessions     | Redis (ioredis)                                         |
+| Real-time            | Socket.IO (host ↔ guest chat)                           |
+| Payments             | Konnect API (Tunisian Dinar)                            |
+| Local infrastructure | Docker Compose                                          |
 
 ---
 
-## Project Structure
-
-```
-ejari/
-├── app/
-│   ├── api/                  ← Backend Express
-│   │   ├── prisma/
-│   │   │   ├── schema.prisma ← Database schema
-│   │   │   └── seed.ts       ← Test data
-│   │   └── src/
-│   │       ├── lib/          ← Prisma client (singleton)
-│   │       ├── middleware/   ← JWT authentication
-│   │       ├── routes/       ← auth, properties, bookings, payments
-│   │       ├── services/     ← OTP (Redis), Redis client
-│   │       └── socket.ts     ← Real-time chat with Socket.IO
-│   └── web/                  ← Next.js Frontend
-│       └── src/
-│           ├── app/          ← Pages (App Router)
-│           ├── components/   ← Reusable components
-│           ├── lib/          ← API client, Auth context
-│           └── types/        ← Shared TypeScript types
-└── docker-compose.yml        ← Postgres + Redis for local development
-```
-
----
-
-## Running the Project Locally
+## Getting Started
 
 ### Prerequisites
 
 - Node.js v18+
 - Docker Desktop
 
-### 1. Start the Infrastructure
+### 1. Start infrastructure
 
 ```bash
 docker compose up -d
-# Starts PostgreSQL on port 5432 and Redis on port 6379
+# Starts PostgreSQL on :5432 and Redis on :6379
 ```
 
 ### 2. Backend API
 
 ```bash
 cd app/api
-cp .env.example .env          # Fill JWT_SECRET with a long random string
+cp .env.example .env
+# Open .env and set JWT_SECRET to a long random string:
+# openssl rand -base64 64
+
 npm install
-npx prisma generate
-npx prisma db push
-npm run db:seed               # Creates 6 properties and 3 test users
-npm run dev                   # API runs on http://localhost:4000
+npx prisma generate   # must show: "Generated to node_modules/@prisma/client"
+npx prisma db push    # creates all tables
+npm run db:seed       # creates 6 properties and 3 test users
+npm run dev           # API running at http://localhost:4000
+```
+
+**Verify it works:**
+
+```bash
+curl http://localhost:4000/health
+curl http://localhost:4000/properties
 ```
 
 ### 3. Frontend
@@ -76,16 +60,16 @@ npm run dev                   # API runs on http://localhost:4000
 cd app/web
 cp .env.local.example .env.local
 npm install
-npm run dev                   # Website runs on http://localhost:3000
+npm run dev           # Site running at http://localhost:3000
 ```
 
 ---
 
-## Test Accounts
+## Test Credentials
 
-All OTP codes are displayed in the API terminal (no real SMS in development mode).
+All OTPs print to the API terminal in dev mode — no real SMS is sent.
 
-| Role                    | Phone Number |
+| Role                    | Phone        |
 | ----------------------- | ------------ |
 | Host 1 — Ahmed Ben Ali  | +21698000001 |
 | Host 2 — Fatma Trabelsi | +21698000002 |
@@ -93,98 +77,173 @@ All OTP codes are displayed in the API terminal (no real SMS in development mode
 
 ---
 
-## Complete Booking Flow
+## Complete Booking Flow (dev)
 
-1. Guest searches for a property on `/search`
-2. Selects dates on the property page `/property/:id`
-3. Clicks "Book Now" → redirected to `/login` if not authenticated
-4. After login, a booking is created with status `PENDING`
-5. Redirected to mock payment page (dev) or Konnect payment (production)
-6. After successful payment: status → `CONFIRMED`, tax invoice is automatically generated
-7. Host sees the booking in their dashboard and can chat with the guest in real time
+1. Go to `http://localhost:3000` — homepage
+2. Search by city or click a city tile → search results
+3. Click a property → detail page with photos and booking widget
+4. Select dates → click "Réserver" → redirected to `/login` if not logged in
+5. Enter phone `+21698000003` → check the API terminal for the OTP code
+6. Enter the code → logged in as Khaled (guest)
+7. Booking created with status `PENDING`
+8. Redirected to `/booking/:id/mock-pay`
+9. Click "Confirmer le paiement" → calls `POST /payments/dev-confirm`
+10. Booking → `CONFIRMED`, invoice auto-generated → `/booking/:id/success`
+11. Log out → log in as `+21698000001` (host Ahmed) → dashboard shows the booking and revenue
 
 ---
 
-## Main API Endpoints
+## API Reference
+
+### Auth
 
 ```
-POST   /auth/request-otp        Request OTP code
-POST   /auth/verify-otp         Verify OTP and receive JWT
-GET    /auth/me                 Get current user profile
-POST   /auth/become-host        Switch from GUEST to HOST role
+POST  /auth/request-otp       Send OTP to phone number
+POST  /auth/verify-otp        Verify OTP → returns JWT + user
+GET   /auth/me                Get current user profile
+PATCH /auth/me                Update name and email
+POST  /auth/become-host       Upgrade GUEST account to HOST (returns new token)
+```
 
-GET    /properties              Search with filters and date availability
-GET    /properties/:id          Property details
-POST   /properties              Create a new listing (hosts only)
+### Properties
 
-POST   /bookings                Create a booking (checks for conflicts)
-GET    /bookings                List bookings (for host or guest)
-GET    /bookings/stats          Host dashboard statistics
-POST   /bookings/:id/confirm    Confirm a booking (host only)
-POST   /bookings/:id/cancel     Cancel a booking
+```
+GET   /properties             Search — city, dates, guests, price range
+GET   /properties/my          Host's own listings (auth required)
+GET   /properties/:id         Single property detail with photos and reviews
+POST  /properties             Create a listing (hosts only)
+PUT   /properties/:id         Update a listing (owner only)
+POST  /properties/:id/photos  Add a photo to a listing
+```
 
-POST   /payments/initiate       Initiate Konnect payment
-POST   /payments/webhook        Konnect webhook (automatic confirmation)
-POST   /payments/dev-confirm    Simulate payment (development only)
-GET    /payments/invoice/:id    Download invoice for a booking
+### Bookings
+
+```
+POST  /bookings               Create booking — runs conflict check first
+GET   /bookings               List bookings (host sees received, guest sees own)
+GET   /bookings/stats         Host dashboard stats — revenue, counts, etc.
+GET   /bookings/:id           Full booking detail with messages
+POST  /bookings/:id/confirm   Host confirms a pending booking
+POST  /bookings/:id/cancel    Either party cancels
+```
+
+### Payments
+
+```
+POST  /payments/initiate          Start a Konnect payment session
+POST  /payments/webhook           Konnect webhook — confirms booking + generates invoice
+POST  /payments/dev-confirm       Simulate successful payment (development only)
+GET   /payments/invoice/:bookingId  Get invoice for a confirmed booking
+```
+
+### Reviews
+
+```
+POST  /reviews                Post a review (completed bookings only, one per booking)
 ```
 
 ---
 
-## Frontend Pages
+## Pages
 
-| URL                       | Description                      |
-| ------------------------- | -------------------------------- |
-| `/`                       | Homepage                         |
-| `/search`                 | Search with filters              |
-| `/property/:id`           | Property details & booking       |
-| `/login`                  | Login with OTP                   |
-| `/bookings`               | My bookings                      |
-| `/booking/:id`            | Booking details + real-time chat |
-| `/booking/:id/mock-pay`   | Simulated payment (dev)          |
-| `/booking/:id/success`    | Payment success page             |
-| `/become-host`            | Become a host                    |
-| `/dashboard`              | Host dashboard                   |
-| `/dashboard/property/new` | Create new listing               |
-
----
-
-## Key Features
-
-- **OTP Authentication** — Passwordless login using phone number, with rate limiting and brute-force protection
-- **Availability-Based Search** — Filters out properties already booked for the selected dates (interval overlap formula)
-- **Double-Booking Protection** — Conflict verification before every booking insertion
-- **Real-time Chat** — Socket.IO with JWT authentication, private rooms per booking
-- **Automatic Tax Invoicing** — Invoice with 19% VAT generated immediately after payment confirmation
-- **Development Mode** — Simulated payments without a real Konnect account, OTP codes shown in the terminal
+| URL                            | Description                                              |
+| ------------------------------ | -------------------------------------------------------- |
+| `/`                            | Homepage — hero, city tiles, features, pricing, waitlist |
+| `/search`                      | Property grid with filters (city, dates, guests, price)  |
+| `/property/:id`                | Photos, description, host info, reviews, booking widget  |
+| `/login`                       | 2-step OTP login — auto-registers new users              |
+| `/bookings`                    | Guest trips or host received bookings                    |
+| `/booking/:id`                 | Full detail + real-time chat between guest and host      |
+| `/booking/:id/mock-pay`        | Dev payment simulation page                              |
+| `/booking/:id/success`         | Post-payment confirmation                                |
+| `/become-host`                 | Upgrade a guest account to host                          |
+| `/profile`                     | Edit name and email                                      |
+| `/dashboard`                   | Host stats, recent bookings, property list               |
+| `/dashboard/property/new`      | Create a new listing with photos                         |
+| `/dashboard/property/:id/edit` | Edit an existing listing                                 |
 
 ---
 
-## Production Deployment
+## Key Architecture Decisions
 
-| Service     | Plateforme recommandée |
-| ----------- | ---------------------- |
-| Frontend    | Vercel                 |
-| Backend API | Railway                |
-| PostgreSQL  | Neon ou Railway        |
-| Redis       | Upstash                |
+**Prisma singleton** — one `PrismaClient` instance per server process, stored on `global.__prisma` to survive hot-reload without exhausting database connections.
 
-Environment variables to configure in production:
+**Middleware order in `index.ts`** — `helmet()` → `cors()` → `express.raw()` for webhook → `express.json()` → routes. Routes registered before `express.json()` would receive `undefined` bodies on every request.
 
-- `DATABASE_URL` — PostgreSQL connection string
-- `JWT_SECRET` — Long random string (`openssl rand -base64 64`)
-- `REDIS_URL` — Redis URL with authentication
-- `KONNECT_API_KEY` — Konnect API key
-- `KONNECT_WALLET_ID` — Konnect wallet ID
-- `KONNECT_WEBHOOK_SECRET` — Webhook signature secret
-- `FRONTEND_URL` — Production frontend URL
-- `API_URL` — Production API URL
+**Date overlap formula** — two date ranges `[A_start, A_end]` and `[B_start, B_end]` overlap when `A_start < B_end AND A_end > B_start`. Used in both the search query (filter unavailable properties) and booking creation (conflict check before insert).
+
+**Atomic payment confirmation** — `prisma.$transaction()` updates `Payment`, `Booking`, and creates `Invoice` together. If any step fails, all roll back.
+
+**Socket.IO authentication** — JWT verified in `io.use()` middleware before the connection is accepted. Booking room membership re-verified on every `send_message` event, not just on join.
+
+**OTP security** — three Redis keys per phone: the code (5-min TTL), attempt counter (locked after 5 wrong tries), rate limit (max 3 sends per minute). All keys have TTLs — nothing needs manual cleanup.
+
+**Money type** — `Decimal(10,3)` in Prisma, not `Float`. Float arithmetic gives `0.1 + 0.2 = 0.30000000000000004`. Decimal stores exact values. TND has 3 decimal places (millimes).
 
 ---
 
-## Built With
+## Common Issues
 
-This project was developed step by step with a production-ready architecture:
-Strict TypeScript, clean separation of routes and services, Prisma singleton, Redis-based OTP with automatic TTL, date overlap validation, and atomic transactions for payments.
+**Seed crashes with "Cannot find module '@prisma/client'"**
+Your `prisma/schema.prisma` still has `provider = "prisma-client"` with a custom `output` path. Fix the generator block:
 
-Developed for the Tunisian market — Supporting local currency, local payment gateway, and automatic tax compliance.
+```prisma
+generator client {
+  provider = "prisma-client-js"
+}
+```
+
+Then run `npx prisma generate` again.
+
+**`req.body` is always `undefined`**
+Routes are mounted before `express.json()` in `index.ts`. Middleware must always come before routes.
+
+**Images not loading**
+Add the image domain to `next.config.js` under `images.remotePatterns`.
+
+**Socket.IO connection refused**
+The frontend is connecting to the wrong URL. Check `NEXT_PUBLIC_API_URL` in `.env.local`.
+
+---
+
+## Deployment
+
+| Service     | Recommended platform |
+| ----------- | -------------------- |
+| Frontend    | Vercel               |
+| Backend API | Railway              |
+| PostgreSQL  | Neon or Railway      |
+| Redis       | Upstash              |
+
+### Production environment variables
+
+**Backend (`app/api/.env`):**
+
+```
+DATABASE_URL=postgresql://...
+JWT_SECRET=<openssl rand -base64 64>
+REDIS_URL=redis://...
+FRONTEND_URL=https://yourdomain.com
+API_URL=https://your-api.railway.app
+NODE_ENV=production
+KONNECT_API_KEY=...
+KONNECT_WALLET_ID=...
+KONNECT_WEBHOOK_SECRET=...
+```
+
+**Frontend (`app/web/.env.local`):**
+
+```
+NEXT_PUBLIC_API_URL=https://your-api.railway.app
+```
+
+### Deploy checklist
+
+```
+□ .env not committed to git
+□ JWT_SECRET is at least 64 characters
+□ CORS origin set to production frontend URL only
+□ npx prisma migrate deploy run (not db push)
+□ Konnect webhook URL updated to production API URL
+□ Health endpoint responds: GET /health → {"status":"ok"}
+```
